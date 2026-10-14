@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Profile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fff; --ink:#000; --mut:#6a6a6a; --line:#e4e4e4; --soft:#f4f4f4;
+  --serif:"Instrument Serif",Georgia,"Times New Roman",serif;
+  --sans:"Instrument Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+:root[data-theme="dark"]{ --bg:#000; --ink:#fff; --mut:#9a9a9a; --line:#2a2a2a; --soft:#111; }
+*{box-sizing:border-box}
+html{height:100%}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;
+  transition:background .4s var(--ease),color .4s var(--ease);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+h1,h2,h3{font-family:var(--serif);font-weight:400;margin:0;letter-spacing:-.01em}
+
+/* top bar */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;gap:12px;direction:ltr;
+  padding:calc(env(safe-area-inset-top,0px) + 12px) 16px 12px;background:linear-gradient(var(--bg) 70%,transparent)}
+.icon-btn{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--ink);background:var(--bg);display:grid;place-items:center;
+  transition:transform .35s var(--ease),background .2s,color .2s}
+.icon-btn:hover{background:var(--ink);color:var(--bg)}
+.icon-btn:hover svg{transform:rotate(60deg)}
+.icon-btn svg{width:22px;height:22px;transition:transform .5s var(--ease)}
+.brand{font-family:var(--serif);font-size:1.5rem;background:none;border:0;padding:4px 6px}
+
+/* layout */
+main{max-width:860px;margin:0 auto;padding:calc(env(safe-area-inset-top,0px) + 84px) 20px calc(env(safe-area-inset-bottom,0px) + 120px)}
+#view{animation:pageIn .5s var(--ease) both}
+@keyframes pageIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* home */
+.home{display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:2vh}
+.avatar-wrap{position:relative;width:184px;height:184px;display:grid;place-items:center;animation:pop .9s var(--ease) both}
+.avatar{width:152px;height:152px;border-radius:50%;object-fit:cover;background:var(--soft);border:1.5px solid var(--ink)}
+.ring{position:absolute;inset:0;border-radius:50%;border:1.5px dashed var(--ink);animation:spin 28s linear infinite}
+.ring::after{content:"";position:absolute;top:-5px;left:50%;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:var(--ink)}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pop{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:none}}
+.home h1{font-size:clamp(2.4rem,8vw,3.6rem);margin-top:22px;animation:rise .7s .25s var(--ease) both}
+.bio-box{margin-top:22px;width:100%;max-width:520px;border:1.5px solid var(--ink);border-radius:22px;padding:22px 24px;
+  text-align:start;white-space:pre-wrap;overflow-wrap:anywhere;animation:rise .7s .4s var(--ease) both}
+@keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+
+/* dock */
+.dock{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 16px);transform:translateX(-50%);z-index:20;
+  display:flex;gap:4px;padding:5px;border:1.5px solid var(--ink);border-radius:999px;background:var(--bg);max-width:calc(100% - 24px)}
+.dock a{padding:10px 16px;border-radius:999px;text-decoration:none;color:var(--ink);font-weight:500;font-size:.95rem;white-space:nowrap;
+  transition:background .3s var(--ease),color .3s var(--ease)}
+.dock a:hover{background:var(--soft)}
+.dock a.on{background:var(--ink);color:var(--bg)}
+
+/* sections */
+.page-title{font-size:clamp(2rem,6vw,2.8rem);margin-bottom:24px}
+.list{display:flex;flex-direction:column;gap:16px}
+.row{display:flex;gap:20px;align-items:stretch;border:1.5px solid var(--line);border-radius:18px;padding:14px;
+  transition:border-color .3s,transform .4s var(--ease);animation:rise .6s var(--ease) both}
+.row:hover{border-color:var(--ink);transform:translateY(-2px)}
+.row .pic{flex:0 0 190px;border-radius:12px;overflow:hidden;background:var(--soft);min-height:130px}
+.row .pic img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s var(--ease)}
+.row:hover .pic img{transform:scale(1.05)}
+.row .txt{flex:1;min-width:0;padding:6px 6px 6px 0;display:flex;flex-direction:column;gap:6px}
+.row h3{font-size:1.6rem;line-height:1.15}
+.row time{color:var(--mut);font-size:.88rem}
+.row p{margin:0;color:var(--ink);white-space:pre-wrap;overflow-wrap:anywhere}
+.meta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:auto;padding-top:8px}
+.stars{letter-spacing:2px;font-size:1.05rem}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border-radius:999px;border:1.5px solid var(--ink);background:var(--ink);color:var(--bg);
+  text-decoration:none;font-weight:500;font-size:.95rem;transition:transform .25s var(--ease),background .2s,color .2s}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:scale(.97)}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.ghost:hover{background:var(--ink);color:var(--bg)}
+.btn.sm{padding:6px 14px;font-size:.88rem}
+.empty{border:1.5px dashed var(--line);border-radius:18px;padding:40px 20px;text-align:center;color:var(--mut)}
+@media(max-width:620px){
+  .row{flex-direction:column}
+  .row .pic{flex:none;height:190px}
+  .row .txt{padding:0 6px 6px}
+  .dock a{padding:10px 12px;font-size:.88rem}
+}
+
+/* settings drawer */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:30;opacity:0;pointer-events:none;transition:opacity .3s}
+.scrim.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;bottom:0;left:0;width:min(330px,88vw);background:var(--bg);border-right:1.5px solid var(--ink);z-index:31;direction:ltr;
+  transform:translateX(-102%);transition:transform .45s var(--ease);padding:calc(env(safe-area-inset-top,0px) + 20px) 22px 22px;display:flex;flex-direction:column;gap:22px}
+.drawer.open{transform:none}
+.drawer h2{font-size:2rem}
+.field{display:flex;flex-direction:column;gap:8px}
+.field>label,.lbl{font-weight:600;font-size:.92rem}
+.switch-row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.switch{position:relative;width:54px;height:30px;border-radius:999px;border:1.5px solid var(--ink);background:var(--bg);padding:0}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--ink);transition:transform .35s var(--ease)}
+.switch[aria-checked="true"]{background:var(--ink)}
+.switch[aria-checked="true"]::after{transform:translateX(24px);background:var(--bg)}
+select,input[type=text],input[type=password],input[type=url],input[type=date],textarea{width:100%;padding:11px 14px;border-radius:12px;border:1.5px solid var(--ink);background:var(--bg)}
+textarea{min-height:110px;resize:vertical}
+.secret{margin-top:auto;border:1.5px dashed var(--mut);background:transparent;border-radius:12px;padding:12px;color:var(--mut);text-align:start;
+  transition:border-color .2s,color .2s}
+.secret:hover{border-color:var(--ink);color:var(--ink)}
+
+/* modal */
+.modal{position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.55)}
+.modal.open{display:flex;animation:fade .25s both}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.card{width:100%;max-width:440px;max-height:92vh;overflow:auto;background:var(--bg);border:1.5px solid var(--ink);border-radius:24px;padding:24px;animation:rise .45s var(--ease) both}
+.card h2{font-size:2rem;margin-bottom:6px}
+.card .sub{color:var(--mut);margin:0 0 16px;font-size:.92rem}
+.slot{min-height:56px;border:1.5px solid var(--ink);border-radius:14px;padding:12px 16px;font-size:1.4rem;letter-spacing:.12em;display:flex;align-items:center;flex-wrap:wrap;
+  overflow-wrap:anywhere;margin-bottom:14px}
+.slot .caret{display:inline-block;width:2px;height:1.4em;background:var(--ink);margin-left:2px;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.slot .ch{animation:drop .25s var(--ease) both}
+@keyframes drop{from{opacity:0;transform:translateY(-10px) scale(.8)}to{opacity:1;transform:none}}
+.keys{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:14px}
+.key{aspect-ratio:1;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);font-weight:600;transition:all .2s var(--ease)}
+.key:hover{border-color:var(--ink);background:var(--ink);color:var(--bg);transform:translateY(-2px)}
+.key:active{transform:scale(.92)}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.shake{animation:shake .45s}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.msg{min-height:1.4em;margin:10px 0 0;font-size:.92rem;color:var(--ink);font-weight:500}
+
+/* admin */
+.admin{position:fixed;inset:0;z-index:50;background:var(--bg);overflow:auto;display:none}
+.admin.open{display:block;animation:fade .3s both}
+.admin .wrap{max-width:760px;margin:0 auto;padding:calc(env(safe-area-inset-top,0px) + 20px) 20px 60px}
+.admin header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
+.admin h1{font-size:2.2rem}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:22px}
+.tab{padding:8px 16px;border-radius:999px;border:1.5px solid var(--ink);background:var(--bg)}
+.tab.on{background:var(--ink);color:var(--bg)}
+.form{border:1.5px solid var(--ink);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px;margin-bottom:22px;animation:rise .4s var(--ease) both}
+.form h3{font-size:1.5rem}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:520px){.two{grid-template-columns:1fr}}
+.preview{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.preview img{width:96px;height:72px;object-fit:cover;border-radius:10px;border:1.5px solid var(--line)}
+.item{display:flex;gap:12px;align-items:center;border:1.5px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:10px}
+.item img{width:54px;height:54px;border-radius:10px;object-fit:cover;flex:none;background:var(--soft)}
+.item .t{flex:1;min-width:0}
+.item .t b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .t span{color:var(--mut);font-size:.85rem}
+.note{color:var(--mut);font-size:.92rem}
+.note b{color:var(--ink)}
+.toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 16px);transform:translate(-50%,-140%);z-index:80;background:var(--ink);color:var(--bg);
+  padding:10px 20px;border-radius:999px;font-weight:500;transition:transform .45s var(--ease)}
+.toast.show{transform:translate(-50%,0)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="icon-btn" id="openSettings" aria-label="Settings">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+  </button>
+  <button class="brand" id="brand"></button>
+</div>
+
+<main><div id="view"></div></main>
+
+<nav class="dock" id="dock" aria-label="Sections">
+  <a href="#/achievements" data-p="achievements"></a>
+  <a href="#/projects" data-p="projects"></a>
+  <a href="#/announcements" data-p="announcements"></a>
+</nav>
+
+<!-- settings -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <h2 id="tSettings"></h2>
+  <div class="switch-row">
+    <span class="lbl" id="tDark"></span>
+    <button class="switch" id="darkSwitch" role="switch" aria-checked="false" aria-labelledby="tDark"></button>
+  </div>
+  <div class="field">
+    <label for="langSel" id="tLang"></label>
+    <select id="langSel">
+      <option value="en">English</option>
+      <option value="es">Español</option>
+      <option value="fr">Français</option>
+      <option value="de">Deutsch</option>
+    </select>
+  </div>
+  <button class="secret" id="openSheet"></button>
+</aside>
+
+<!-- alphabet sheet -->
+<div class="modal" id="sheetModal" role="dialog" aria-modal="true" aria-labelledby="tSheetTitle">
+  <div class="card" id="sheetCard">
+    <h2 id="tSheetTitle"></h2>
+    <p class="sub" id="tSheetHint"></p>
+    <div class="keys" id="keys"></div>
+    <div class="slot" id="slot" aria-live="polite"></div>
+    <div class="actions">
+      <button class="btn" id="sheetEnter"></button>
+      <button class="btn ghost" id="sheetClear"></button>
+      <button class="btn ghost" id="sheetClose"></button>
+    </div>
+    <p class="msg" id="sheetMsg" role="alert"></p>
+  </div>
+</div>
+
+<!-- admin login -->
+<div class="modal" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="tLoginTitle">
+  <div class="card" id="loginCard">
+    <h2 id="tLoginTitle"></h2>
+    <p class="sub" id="tLoginHint"></p>
+    <div class="field" style="margin-bottom:14px">
+      <label for="pw" id="tPw"></label>
+      <input type="password" id="pw" autocomplete="off">
+    </div>
+    <div class="actions">
+      <button class="btn" id="loginGo"></button>
+      <button class="btn ghost" id="loginClose"></button>
+    </div>
+    <p class="msg" id="loginMsg" role="alert"></p>
+  </div>
+</div>
+
+<!-- admin panel -->
+<div class="admin" id="admin" aria-hidden="true"><div class="wrap" id="adminWrap"></div></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+"use strict";
+
+/* ============ Secrets (stored only as salted PBKDF2-SHA256 hashes) ============ */
+const ITER = 150000;
+const SHEET = { salt: "78f256409149d9dce0e15be9094b1c77", hash: "b609f3dac6594a84bc97e56200464675cf15f1bd00f053caf05d259f256955fa" };
+const ADMIN = { salt: "0dcb3b9a1d1a1bc7b610d2f5d8797b0c", hash: "a6cf8ee33f92ccd956da7088d5a61d73437192ce951fcc8504f095ffd30131af" };
+const MAX_TRIES = 10, LOCK_MS = 30 * 60 * 1000;
+
+async function derive(text, salt) {
+  if (!window.crypto || !crypto.subtle) throw new Error("secure-context");
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey("raw", enc.encode(text), "PBKDF2", false, ["deriveBits"]);
+  const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", salt: enc.encode(salt), iterations: ITER, hash: "SHA-256" }, key, 256);
+  return [...new Uint8Array(bits)].map(b => b.toString(16).padStart(2, "0")).join("");
+}
+function same(a, b) { if (a.length !== b.length) return false; let r = 0; for (let i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i); return r === 0; }
+
+/* ============ Translations ============ */
+const I18N = {
+  en: { settings:"Settings", dark:"Dark theme", lang:"Language", sheet:"Alphabet sheet", sheetHint:"Fill the box with the secret word.", enter:"Enter", clear:"Clear", close:"Close",
+    wrongWord:"That is not the word.", adminTitle:"Admin panel", adminHint:"Enter the admin password.", password:"Password", unlock:"Unlock", wrongPw:"Wrong password.",
+    attemptsLeft:"Attempts left: {n}", locked:"Locked. Try again in {m}.", achievements:"Achievements", projects:"Projects", announcements:"Announcements",
+    emptyA:"No achievements yet.", emptyP:"No projects yet.", emptyN:"No announcements yet.", download:"Download", rating:"Rating", needSecure:"Open this page over https or localhost to unlock." },
+  es: { settings:"Ajustes", dark:"Tema oscuro", lang:"Idioma", sheet:"Hoja del alfabeto", sheetHint:"Rellena la casilla con la palabra secreta.", enter:"Entrar", clear:"Borrar", close:"Cerrar",
+    wrongWord:"Esa no es la palabra.", adminTitle:"Panel de administración", adminHint:"Introduce la contraseña de administrador.", password:"Contraseña", unlock:"Desbloquear", wrongPw:"Contraseña incorrecta.",
+    attemptsLeft:"Intentos restantes: {n}", locked:"Bloqueado. Inténtalo de nuevo en {m}.", achievements:"Logros", projects:"Proyectos", announcements:"Anuncios",
+    emptyA:"Aún no hay logros.", emptyP:"Aún no hay proyectos.", emptyN:"Aún no hay anuncios.", download:"Descargar", rating:"Valoración" },
+  fr: { settings:"Réglages", dark:"Thème sombre", lang:"Langue", sheet:"Feuille alphabet", sheetHint:"Remplissez la case avec le mot secret.", enter:"Valider", clear:"Effacer", close:"Fermer",
+    wrongWord:"Ce n'est pas le bon mot.", adminTitle:"Panneau d'administration", adminHint:"Saisissez le mot de passe administrateur.", password:"Mot de passe", unlock:"Déverrouiller", wrongPw:"Mot de passe incorrect.",
+    attemptsLeft:"Essais restants : {n}", locked:"Verrouillé. Réessayez dans {m}.", achievements:"Réalisations", projects:"Projets", announcements:"Annonces",
+    emptyA:"Aucune réalisation pour l'instant.", emptyP:"Aucun projet pour l'instant.", emptyN:"Aucune annonce pour l'instant.", download:"Télécharger", rating:"Note" },
+  de: { settings:"Einstellungen", dark:"Dunkles Design", lang:"Sprache", sheet:"Alphabet-Blatt", sheetHint:"Füllen Sie das Feld mit dem geheimen Wort.", enter:"Eingeben", clear:"Löschen", close:"Schließen",
+    wrongWord:"Das ist nicht das Wort.", adminTitle:"Admin-Bereich", adminHint:"Admin-Passwort eingeben.", password:"Passwort", unlock:"Entsperren", wrongPw:"Falsches Passwort.",
+    attemptsLeft:"Verbleibende Versuche: {n}", locked:"Gesperrt. Versuchen Sie es in {m} erneut.", achievements:"Erfolge", projects:"Projekte", announcements:"Ankündigungen",
+    emptyA:"Noch keine Erfolge.", emptyP:"Noch keine Projekte.", emptyN:"Noch keine Ankündigungen.", download:"Herunterladen", rating:"Bewertung" },
+};
+let lang = "en";
+const t = (k, v) => {
+  let s = (I18N[lang] && I18N[lang][k]) || I18N.en[k] || k;
+  if (v) for (const key in v) s = s.replace("{" + key + "}", v[key]);
+  return s;
+};
+
+/* ============ Data ============ */
+const LS = { draft: "pf_draft", theme: "pf_theme", lang: "pf_lang", lock: "pf_lock" };
+const DEFAULTS = { profile: { name: "Hyvoxel", bio: "This is my profile", avatar: "" }, achievements: [], projects: [], announcements: [] };
+let published = null, draft = null, data = null;
+
+const safeUrl = u => {
+  u = String(u || "").trim();
+  if (!u) return "";
+  if (/^(https?:\/\/|\.{0,2}\/|[\w\-./%]+$)/i.test(u) && !/^\s*(javascript|data|vbscript):/i.test(u)) return u;
+  return "";
+};
+const safeImg = u => {
+  u = String(u || "").trim();
+  if (/^data:image\/(png|jpe?g|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(u)) return u;
+  return safeUrl(u);
+};
+const str = (v, max) => String(v == null ? "" : v).slice(0, max);
+function normItem(i, isProject) {
+  const o = { id: str(i && i.id, 40) || uid(), title: str(i && i.title, 200), description: str(i && i.description, 5000),
+              image: safeImg(i && i.image), date: str(i && i.date, 10) };
+  if (isProject) {
+    o.link = safeUrl(i && i.link);
+    const r = Math.round(Number(i && i.rating));
+    o.rating = r >= 1 && r <= 5 ? r : 0;
+  }
+  return o;
+}
+function normalize(d) {
+  d = d && typeof d === "object" ? d : {};
+  const p = d.profile || {};
+  const arr = (a, proj) => (Array.isArray(a) ? a : []).slice(0, 500).map(i => normItem(i, proj));
+  return {
+    profile: { name: str(p.name, 80) || DEFAULTS.profile.name, bio: str(p.bio, 3000) || DEFAULTS.profile.bio, avatar: safeImg(p.avatar) },
+    achievements: arr(d.achievements), projects: arr(d.projects, true), announcements: arr(d.announcements)
+  };
+}
+const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+const sorted = a => a.slice().sort((x, y) => (y.date || "").localeCompare(x.date || ""));
+
+async function loadData() {
+  try {
+    const r = await fetch("data.json?v=" + Date.now(), { cache: "no-store" });
+    if (r.ok) published = normalize(await r.json());
+  } catch (e) { /* no data.json yet */ }
+  try { const raw = localStorage.getItem(LS.draft); if (raw) draft = normalize(JSON.parse(raw)); } catch (e) {}
+  data = draft || published || normalize(DEFAULTS);
+}
+function persist() {
+  draft = data;
+  try { localStorage.setItem(LS.draft, JSON.stringify(data)); return true; }
+  catch (e) { toast("Storage is full. Use smaller images or export your data."); return false; }
+}
+
+/* ============ Helpers ============ */
+const $ = id => document.getElementById(id);
+function h(tag, props, ...kids) {
+  const e = document.createElement(tag);
+  for (const k in (props || {})) {
+    const v = props[k];
+    if (k === "class") e.className = v;
+    else if (k === "text") e.textContent = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (v !== false && v != null) e.setAttribute(k, v === true ? "" : v);
+  }
+  kids.flat().forEach(c => { if (c != null) e.append(c.nodeType ? c : document.createTextNode(c)); });
+  return e;
+}
+let toastTimer;
+function toast(msg) {
+  const el = $("toast"); el.textContent = msg; el.classList.add("show");
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), 2400);
+}
+function avatarSrc(p) {
+  if (p.avatar) return p.avatar;
+  const ch = (p.name || "?").trim().charAt(0).toUpperCase() || "?";
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="#000"/><text x="100" y="132" font-family="Georgia,serif" font-size="110" text-anchor="middle" fill="#fff">${ch.replace(/[<>&"]/g, "")}</text></svg>`;
+  return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+}
+function fmtDate(d) {
+  if (!d) return "";
+  const x = new Date(d + "T00:00:00");
+  return isNaN(x) ? d : x.toLocaleDateString(lang === "ar" ? "ar" : lang, { year: "numeric", month: "long", day: "numeric" });
+}
+function readImage(file, max) {
+  return new Promise((res, rej) => {
+    const fr = new FileReader();
+    fr.onerror = rej;
+    fr.onload = () => {
+      const img = new Image();
+      img.onerror = rej;
+      img.onload = () => {
+        const s = Math.min(1, max / Math.max(img.width, img.height));
+        const c = document.createElement("canvas");
+        c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+        const ctx = c.getContext("2d"); ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, c.width, c.height); ctx.drawImage(img, 0, 0, c.width, c.height);
+        res(c.toDataURL("image/jpeg", .82));
+      };
+      img.src = fr.result;
+    };
+    fr.readAsDataURL(file);
+  });
+}
+
+/* ============ Public pages ============ */
+const PAGES = ["home", "achievements", "projects", "announcements"];
+function route() {
+  const p = (location.hash.replace(/^#\/?/, "") || "home");
+  return PAGES.includes(p) ? p : "home";
+}
+function render() {
+  const page = route(), view = $("view");
+  view.style.animation = "none"; void view.offsetWidth; view.style.animation = "";
+  view.replaceChildren();
+  document.querySelectorAll("#dock a").forEach(a => a.classList.toggle("on", a.dataset.p === page));
+  $("brand").textContent = data.profile.name;
+  document.title = data.profile.name;
+
+  if (page === "home") {
+    view.append(h("section", { class: "home" },
+      h("div", { class: "avatar-wrap" }, h("div", { class: "ring" }), h("img", { class: "avatar", src: avatarSrc(data.profile), alt: data.profile.name })),
+      h("h1", { text: data.profile.name }),
+      h("div", { class: "bio-box", text: data.profile.bio })));
+    return;
+  }
+  const emptyKey = { achievements: "emptyA", projects: "emptyP", announcements: "emptyN" }[page];
+  view.append(h("h2", { class: "page-title", text: t(page) }));
+  const items = sorted(data[page]);
+  if (!items.length) { view.append(h("div", { class: "empty", text: t(emptyKey) })); return; }
+  view.append(h("div", { class: "list" }, items.map((it, i) => {
+    const meta = [];
+    if (page === "projects") {
+      if (it.rating) meta.push(h("span", { class: "stars", role: "img", "aria-label": t("rating") + ": " + it.rating + "/5", text: "★".repeat(it.rating) + "☆".repeat(5 - it.rating) }));
+      if (it.link) meta.push(h("a", { class: "btn sm", href: it.link, target: "_blank", rel: "noopener", download: "" }, t("download")));
+    }
+    return h("article", { class: "row", style: `animation-delay:${Math.min(i, 8) * 70}ms` },
+      it.image ? h("div", { class: "pic" }, h("img", { src: it.image, alt: "", loading: "lazy" })) : null,
+      h("div", { class: "txt" },
+        h("h3", { text: it.title }),
+        it.date ? h("time", { datetime: it.date, text: fmtDate(it.date) }) : null,
+        it.description ? h("p", { text: it.description }) : null,
+        meta.length ? h("div", { class: "meta" }, meta) : null));
+  })));
+}
+
+/* ============ Settings / language / theme ============ */
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+  $("tSettings").textContent = t("settings");
+  $("openSettings").setAttribute("aria-label", t("settings"));
+  $("tDark").textContent = t("dark"); $("tLang").textContent = t("lang");
+  $("openSheet").textContent = t("sheet");
+  $("tSheetTitle").textContent = t("sheet"); $("tSheetHint").textContent = t("sheetHint");
+  $("sheetEnter").textContent = t("enter"); $("sheetClear").textContent = t("clear"); $("sheetClose").textContent = t("close");
+  $("tLoginTitle").textContent = t("adminTitle"); $("tLoginHint").textContent = t("adminHint");
+  $("tPw").textContent = t("password"); $("loginGo").textContent = t("unlock"); $("loginClose").textContent = t("close");
+  document.querySelectorAll("#dock a").forEach(a => a.textContent = t(a.dataset.p));
+  $("langSel").value = lang;
+  drawSlot();
+}
+function setTheme(th) {
+  document.documentElement.dataset.theme = th;
+  $("darkSwitch").setAttribute("aria-checked", th === "dark");
+  try { localStorage.setItem(LS.theme, th); } catch (e) {}
+}
+const drawer = $("drawer"), scrim = $("scrim");
+function openDrawer(o) {
+  drawer.classList.toggle("open", o); scrim.classList.toggle("open", o); drawer.setAttribute("aria-hidden", !o);
+  if (o) $("langSel").focus(); else $("openSettings").focus();
+}
+$("openSettings").onclick = () => openDrawer(true);
+scrim.onclick = () => openDrawer(false);
+$("darkSwitch").onclick = () => setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
+$("langSel").onchange = e => { lang = e.target.value; try { localStorage.setItem(LS.lang, lang); } catch (x) {} applyLang(); render(); };
+$("brand").onclick = () => { location.hash = "#/home"; };
+window.addEventListener("hashchange", render);
+
+/* ============ Alphabet sheet ============ */
+let typed = "";
+const KEYSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/".split("");
+KEYSET.forEach(k => $("keys").append(h("button", { class: "key", type: "button", text: k, onclick: () => addChar(k) })));
+$("keys").append(h("button", { class: "key", type: "button", text: "⌫", "aria-label": "Backspace", onclick: () => { typed = typed.slice(0, -1); drawSlot(); } }));
+function addChar(c) { if (typed.length < 40) { typed += c; drawSlot(true); } }
+function drawSlot(anim) {
+  const s = $("slot"); s.replaceChildren();
+  [...typed].forEach((c, i) => s.append(h("span", { class: anim && i === typed.length - 1 ? "ch" : "", text: c })));
+  s.append(h("span", { class: "caret" }));
+}
+function openSheet(o) {
+  $("sheetModal").classList.toggle("open", o);
+  if (o) { openDrawer(false); typed = ""; drawSlot(); $("sheetMsg").textContent = ""; }
+}
+$("openSheet").onclick = () => openSheet(true);
+$("sheetClose").onclick = () => openSheet(false);
+$("sheetClear").onclick = () => { typed = ""; drawSlot(); $("sheetMsg").textContent = ""; };
+$("sheetEnter").onclick = submitSheet;
+async function submitSheet() {
+  const msg = $("sheetMsg");
+  try {
+    const ok = same(await derive(typed.toLowerCase(), SHEET.salt), SHEET.hash);
+    if (ok) { openSheet(false); openLogin(true); return; }
+    msg.textContent = t("wrongWord");
+  } catch (e) { msg.textContent = t("needSecure"); }
+  const c = $("sheetCard"); c.classList.remove("shake"); void c.offsetWidth; c.classList.add("shake");
+  typed = ""; drawSlot();
+}
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") {
+    if ($("sheetModal").classList.contains("open")) openSheet(false);
+    else if ($("loginModal").classList.contains("open")) openLogin(false);
+    else if (drawer.classList.contains("open")) openDrawer(false);
+    return;
+  }
+  if (!$("sheetModal").classList.contains("open")) return;
+  if (e.target.closest && e.target.closest("button") && (e.key === "Enter" || e.key === " ")) return;
+  if (e.key === "Enter") { e.preventDefault(); submitSheet(); }
+  else if (e.key === "Backspace") { typed = typed.slice(0, -1); drawSlot(); }
+  else if (e.key.length === 1 && /[a-z0-9/]/i.test(e.key)) addChar(e.key.toUpperCase());
+});
+
+/* ============ Admin login (10 attempts, then 30 minute lock) ============ */
+let lockTimer;
+const getLock = () => { try { return JSON.parse(localStorage.getItem(LS.lock)) || { fails: 0, until: 0 }; } catch (e) { return { fails: 0, until: 0 }; } };
+const setLock = l => { try { localStorage.setItem(LS.lock, JSON.stringify(l)); } catch (e) {} };
+function lockText(ms) { const s = Math.ceil(ms / 1000); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+function refreshLock() {
+  const l = getLock(), msg = $("loginMsg"), left = l.until - Date.now();
+  const locked = left > 0;
+  $("loginGo").disabled = locked; $("pw").disabled = locked;
+  if (locked) msg.textContent = t("locked", { m: lockText(left) });
+  else if (l.until) { setLock({ fails: 0, until: 0 }); msg.textContent = ""; }
+  return locked;
+}
+function openLogin(o) {
+  $("loginModal").classList.toggle("open", o);
+  clearInterval(lockTimer);
+  if (!o) return;
+  $("pw").value = ""; $("loginMsg").textContent = "";
+  if (refreshLock()) lockTimer = setInterval(() => { if (!refreshLock()) clearInterval(lockTimer); }, 1000);
+  else setTimeout(() => $("pw").focus(), 50);
+}
+$("loginClose").onclick = () => openLogin(false);
+$("loginGo").onclick = tryLogin;
+$("pw").addEventListener("keydown", e => { if (e.key === "Enter") tryLogin(); });
+async function tryLogin() {
+  if (refreshLock()) return;
+  const msg = $("loginMsg"), val = $("pw").value;
+  let ok = false;
+  try { ok = same(await derive(val, ADMIN.salt), ADMIN.hash); }
+  catch (e) { msg.textContent = t("needSecure"); return; }
+  if (ok) { setLock({ fails: 0, until: 0 }); openLogin(false); openAdmin(); return; }
+  const l = getLock(); l.fails++;
+  if (l.fails >= MAX_TRIES) { l.fails = 0; l.until = Date.now() + LOCK_MS; setLock(l); refreshLock(); clearInterval(lockTimer); lockTimer = setInterval(() => { if (!refreshLock()) clearInterval(lockTimer); }, 1000); }
+  else { setLock(l); msg.textContent = t("wrongPw") + " " + t("attemptsLeft", { n: MAX_TRIES - l.fails }); }
+  $("pw").value = "";
+  const c = $("loginCard"); c.classList.remove("shake"); void c.offsetWidth; c.classList.add("shake");
+}
+
+/* ============ Admin panel ============ */
+let tab = "profile", editing = null;
+const TABS = [["profile", "Profile"], ["achievements", "Achievements"], ["projects", "Projects"], ["announcements", "Announcements"], ["data", "Publish"]];
+function openAdmin() { tab = "profile"; editing = null; $("admin").classList.add("open"); $("admin").setAttribute("aria-hidden", "false"); document.body.style.overflow = "hidden"; drawAdmin(); }
+function closeAdmin() { $("admin").classList.remove("open"); $("admin").setAttribute("aria-hidden", "true"); document.body.style.overflow = ""; render(); }
+
+function drawAdmin() {
+  const w = $("adminWrap"); w.replaceChildren();
+  w.append(
+    h("header", {}, h("h1", { text: "Admin panel" }), h("button", { class: "btn ghost sm", onclick: closeAdmin }, "Log out")),
+    h("div", { class: "tabs", role: "tablist" }, TABS.map(([k, label]) =>
+      h("button", { class: "tab" + (k === tab ? " on" : ""), role: "tab", "aria-selected": k === tab, onclick: () => { tab = k; editing = null; drawAdmin(); } }, label)))
+  );
+  if (tab === "profile") w.append(profileForm());
+  else if (tab === "data") w.append(...publishTab());
+  else w.append(itemForm(tab), itemList(tab));
+}
+
+function profileForm() {
+  let avatar = data.profile.avatar;
+  const name = h("input", { type: "text", id: "pName", value: data.profile.name, maxlength: 80 });
+  const bio = h("textarea", { id: "pBio", maxlength: 3000 }); bio.value = data.profile.bio;
+  const img = h("img", { src: avatarSrc({ name: data.profile.name, avatar }), alt: "" });
+  const file = h("input", { type: "file", accept: "image/*", id: "pFile", class: "sr" });
+  file.onchange = async () => { if (file.files[0]) { try { avatar = await readImage(file.files[0], 480); img.src = avatar; } catch (e) { toast("Could not read that image."); } } };
+  return h("form", { class: "form", onsubmit: e => {
+      e.preventDefault();
+      data = { ...data, profile: { name: name.value.trim() || "Hyvoxel", bio: bio.value.trim() || "This is my profile", avatar } };
+      if (persist()) toast("Saved");
+    } },
+    h("h3", { text: "Edit profile" }),
+    h("div", { class: "field" }, h("label", { for: "pName", text: "Name" }), name),
+    h("div", { class: "field" }, h("label", { for: "pBio", text: "Description" }), bio),
+    h("div", { class: "field" }, h("span", { class: "lbl", text: "Profile picture" }),
+      h("div", { class: "preview" }, img,
+        h("label", { class: "btn ghost sm", for: "pFile", tabindex: "0" }, "Choose image"),
+        h("button", { class: "btn ghost sm", type: "button", onclick: () => { avatar = ""; img.src = avatarSrc({ name: name.value, avatar: "" }); } }, "Remove"))),
+    file,
+    h("div", { class: "actions" }, h("button", { class: "btn", type: "submit" }, "Save changes")));
+}
+
+function itemForm(section) {
+  const isProj = section === "projects";
+  const cur = editing ? data[section].find(i => i.id === editing) : null;
+  let image = cur ? cur.image : "";
+  const title = h("input", { type: "text", id: "fTitle", required: true, maxlength: 200, value: cur ? cur.title : "" });
+  const desc = h("textarea", { id: "fDesc", maxlength: 5000 }); desc.value = cur ? cur.description : "";
+  const date = h("input", { type: "date", id: "fDate", required: true, value: cur ? cur.date : new Date().toISOString().slice(0, 10) });
+  const link = isProj ? h("input", { type: "url", id: "fLink", placeholder: "https://… or files/app.zip", value: cur ? cur.link : "" }) : null;
+  const rate = isProj ? h("select", { id: "fRate" }, h("option", { value: "0" }, "No rating"), [1, 2, 3, 4, 5].map(n => h("option", { value: n, selected: cur && cur.rating === n }, "★".repeat(n) + " (" + n + ")"))) : null;
+  const prev = h("div", { class: "preview" });
+  const file = h("input", { type: "file", accept: "image/*", id: "fFile", class: "sr" });
+  const drawPrev = () => {
+    prev.replaceChildren(
+      image ? h("img", { src: image, alt: "" }) : null,
+      h("label", { class: "btn ghost sm", for: "fFile", tabindex: "0" }, image ? "Change image" : "Add image (optional)"),
+      image ? h("button", { class: "btn ghost sm", type: "button", onclick: () => { image = ""; drawPrev(); } }, "Remove image") : null);
+  };
+  drawPrev();
+  file.onchange = async () => { if (file.files[0]) { try { image = await readImage(file.files[0], 900); drawPrev(); } catch (e) { toast("Could not read that image."); } } };
+  return h("form", { class: "form", onsubmit: e => {
+      e.preventDefault();
+      const item = normItem({ id: cur ? cur.id : uid(), title: title.value.trim(), description: desc.value.trim(), image, date: date.value,
+        link: link ? link.value : "", rating: rate ? rate.value : 0 }, isProj);
+      if (isProj && link && link.value.trim() && !item.link) { toast("That download link is not allowed."); return; }
+      const list = cur ? data[section].map(i => i.id === cur.id ? item : i) : [item, ...data[section]];
+      const backup = data;
+      data = { ...data, [section]: list };
+      if (persist()) { toast(cur ? "Saved" : "Added"); editing = null; drawAdmin(); } else data = backup;
+    } },
+    h("h3", { text: (cur ? "Edit " : "Add ") + ({ achievements: "achievement", projects: "project", announcements: "announcement" })[section] }),
+    h("div", { class: "field" }, h("label", { for: "fTitle", text: "Title" }), title),
+    h("div", { class: "field" }, h("label", { for: "fDesc", text: "Description" }), desc),
+    h("div", { class: "field" }, h("span", { class: "lbl", text: "Image" }), prev), file,
+    h("div", { class: "two" }, h("div", { class: "field" }, h("label", { for: "fDate", text: "Date" }), date),
+      isProj ? h("div", { class: "field" }, h("label", { for: "fRate", text: "Rating (1 to 5)" }), rate) : null),
+    isProj ? h("div", { class: "field" }, h("label", { for: "fLink", text: "Download link" }), link) : null,
+    h("div", { class: "actions" },
+      h("button", { class: "btn", type: "submit" }, cur ? "Save changes" : "Add"),
+      cur ? h("button", { class: "btn ghost", type: "button", onclick: () => { editing = null; drawAdmin(); } }, "Cancel") : null));
+}
+
+function itemList(section) {
+  const items = sorted(data[section]);
+  if (!items.length) return h("div", { class: "empty", text: "Nothing here yet. Add the first entry above." });
+  return h("div", {}, items.map(it => h("div", { class: "item" },
+    it.image ? h("img", { src: it.image, alt: "" }) : null,
+    h("div", { class: "t" }, h("b", { text: it.title }), h("span", { text: fmtDate(it.date) })),
+    h("button", { class: "btn ghost sm", onclick: () => { editing = it.id; drawAdmin(); window.scrollTo(0, 0); $("admin").scrollTo(0, 0); } }, "Edit"),
+    h("button", { class: "btn ghost sm", onclick: () => {
+      if (!confirm("Delete \"" + it.title + "\"?")) return;
+      data = { ...data, [section]: data[section].filter(i => i.id !== it.id) }; persist(); drawAdmin(); toast("Deleted");
+    } }, "Delete"))));
+}
+
+function publishTab() {
+  const file = h("input", { type: "file", accept: "application/json,.json", class: "sr", id: "iFile" });
+  file.onchange = async () => {
+    try {
+      const nd = normalize(JSON.parse(await file.files[0].text()));
+      data = nd; if (persist()) { toast("Imported"); drawAdmin(); }
+    } catch (e) { toast("That file is not valid data.json."); }
+  };
+  return [
+    h("div", { class: "form" },
+      h("h3", { text: "Publish your changes" }),
+      h("p", { class: "note" }, "Your edits are saved in this browser only. To show them to visitors on GitHub Pages, export ", h("b", { text: "data.json" }),
+        ", upload it to the root of your repository next to index.html, and commit."),
+      h("div", { class: "actions" },
+        h("button", { class: "btn", onclick: () => {
+          const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+          const a = h("a", { href: URL.createObjectURL(blob), download: "data.json" }); document.body.append(a); a.click(); a.remove();
+        } }, "Export data.json"),
+        h("label", { class: "btn ghost", for: "iFile", tabindex: "0" }, "Import data.json"),
+        h("button", { class: "btn ghost", onclick: () => {
+          if (!confirm("Discard the changes saved in this browser and go back to the published data?")) return;
+          try { localStorage.removeItem(LS.draft); } catch (e) {}
+          draft = null; data = published || normalize(DEFAULTS); drawAdmin(); toast("Draft discarded");
+        } }, "Discard local changes")),
+      file)
+  ];
+}
+
+/* ============ Boot ============ */
+(async function () {
+  try {
+    const th = localStorage.getItem(LS.theme); if (th) setTheme(th);
+    const lg = localStorage.getItem(LS.lang); if (lg && I18N[lg]) lang = lg;
+  } catch (e) {}
+  await loadData();
+  applyLang();
+  render();
+})();
+</script>
+</body>
+</html>
